@@ -1,0 +1,41 @@
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+<form method="POST" action="/jobs">
+    <input style="display:none;" type="text" class="geo" name="location">
+    <input type="text" class="job" name="job">
+    <input type="submit">
+
+</form>
+<script>
+    var result;
+
+    function getLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+                console.log(position);
+                var latitude = "latitude=" + position.coords.latitude;
+                var longitude = "&longitude=" + position.coords.longitude;
+                var query = latitude + longitude + "&localityLanguage=en";
+
+                const Http = new XMLHttpRequest();
+
+                var bigdatacloud_api = "https://api.bigdatacloud.net/data/reverse-geocode-client?";
+                bigdatacloud_api += query;
+                Http.open("GET", bigdatacloud_api);
+                Http.send();
+                Http.onreadystatechange = function() {
+                    if (this.readyState == 4 && this.status == 200) {
+                        result = JSON.parse(this.responseText);
+                        console.log(result);
+                        $(".geo").val(JSON.stringify(result));
+                    }
+                }
+            });
+        } else {
+            alert("geolocation failed")
+        }
+    }
+    $(getLocation);
+</script>
